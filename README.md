@@ -24,5 +24,5 @@ This procedure creates Event Participant records for any Participant/Contact wit
 
 **Installation**
 1. Add the required integration and set up the custom columns as outlined in the Requirements section.
-2. Copy and execute (wifi_session_to_event_participant.sql)[wifi_session_to_event_participant.sql] in SSMS
+2. Copy and execute [wifi_session_to_event_participant.sql](wifi_session_to_event_participant.sql) in SSMS
 3. Set up your SQL Job as outlined in Requirements #4.
