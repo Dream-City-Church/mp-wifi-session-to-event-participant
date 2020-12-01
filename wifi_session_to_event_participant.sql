@@ -17,34 +17,37 @@ AS
 A custom Dream City Church procedure for Ministry Platform
 Version: 1.1
 Author: Stephan Swinford
-Date: 11/19/2020
+Date: 12/1/2020
 
 This procedure is provided "as is" with no warranties expressed or implied.
 
 -- Description --
 This procedure creates Event Participant records for any Participant/Contact
-with an associated WiFi Device and WiFi Session from FrontPorch during an Event 
-with the Enable_WiFi_Attendance bitfield set to True. Currently, it will add
-every Wi-Fi user at the campus during the event (working on ways to scope to
-smaller areas based on FrontPorch zones).
+with an associated WiFi Device and WiFi Session during an Event with the
+Enable_WiFi_Attendance bitfield set to True.
 
-There are 3 requirements for this procedure:
+--Requirements --
+ 1. FrontPorch integration.
 
-    - FrontPorch integration with Ministry Platform
+ 2. We have added a custom "Abbreviation" VARCHAR column to our Congregations
+ table. We use that abbreviation for several purposes, but for this procedure
+ in particular we use it to match a FrontPorch space to a Congregation in MP.
 
-    - 'Enable_WiFi_Attendance' Bit column added to the Events table
+ 3. A column in your Events tabled called "Enable_Wifi_Attendance" with the
+ type of "bit".
 
-    - 'Abbrevation' VarChar(50) column added to the Congregations table
-
-        *** Internally, we use abbrevations when referring to our campuses
-        in order to save space (e.g. "PHX" for "Phoenix Campus"). We originally
-        added the Abbreviations column to make Selected Record Expressions in
-        MP shorter, but since, for us, these are standards, it's an easy way to
-        match up the strings from the FrontPorch "WiFi Space" fields to the
-        campus in MP. If your FrontPorch WiFi_Space field already matches
-        your Congregation_Name or other existing field, you can use that instead.
-        Just update the relevant parts of the query below.
-        
+ 4. A SQL Server Agent Job that calls this procedure needs to be created, or
+ a step needs to be added to an existing daily job. The job can run as
+ frequently as you like as the procedure checks for existing records before
+ creating a new one.
+    * NOTE: Do not use any of the built-in MinistryPlatform jobs as ThinkMinistry
+    may update those jobs at any time and remove your custom Job Step. Create a
+    new Job with a Daily trigger.
+    * Job Step details:
+      **Step Name:** Wifi Session to Event Participant (*your choice on name*)
+      **Type:** Transact-SQL script (T-SQL)
+      **Database:** MinistryPlatform
+      **Command:** EXEC [dbo].[service_wifi_session_event_participant] @DomainID = 1
 
 https://github.com/Dream-City-Church/mp-wifi-session-to-event-participant
 

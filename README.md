@@ -1,8 +1,8 @@
 > # Wifi Device Session to Event Participant
 > ***A custom Dream City Church procedure for Ministry Platform***
-> Version: 1.0
+> Version: 1.1
 > Author: Stephan Swinford
-> Date: 3/2/2020
+> Date: 12/1/2020
 
 `This procedure is provided "as is" with no warranties expressed or implied.`
 
