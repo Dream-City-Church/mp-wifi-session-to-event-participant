@@ -83,18 +83,18 @@ FROM dbo.Participants P
 	LEFT JOIN Wifi_Devices WD ON WD.Contact_ID = C.Contact_ID
 	LEFT JOIN Wifi_Device_Sessions WDS ON WDS.Wifi_Device_ID = WD.Wifi_Device_ID
 	INNER JOIN Events E ON (WDS.Session_Start BETWEEN E.Event_Start_Date AND E.Event_End_Date) OR (WDS.Session_End BETWEEN E.Event_Start_Date AND E.Event_End_Date)
-	LEFT JOIN Locations L ON E.Location_ID = L.Location_ID
-	LEFT JOIN Congregations Con ON L.Congregation_ID = Con.Congregation_ID
+	LEFT JOIN Event_Rooms ER ON ER.Event_ID = E.Event_ID
+	INNER JOIN Wifi_Spaces WS ON WS.Room_ID = ER.Room_ID
 WHERE
     /* First, check if the Event has the Enable_Wifi_Attendance bit set to 1 */
     E.Enable_Wifi_Attendance = 1
     /* Next, does the wifi space abbreviation match the congregation abbreviation */
-	AND LEFT(WDS.Wifi_Space,3) = Con.Abbreviation
+	AND WDS.Wifi_Space = WS.Wifi_Space
     /* Did the event end in the past week? Adjust to a timespan of your liking */
 	AND E.Event_Start_Date BETWEEN GetDate()-7 AND GetDate()
     /* Last, make sure the Participant isn't already marked present at the Event */
 	AND NOT EXISTS(SELECT * FROM Event_Participants EP WHERE EP.Participation_Status_ID IN (3,4) AND EP.Participant_ID = P.Participant_ID AND EP.Event_ID = E.Event_ID)
-GROUP BY P.Participant_ID
+GROUP BY E.Event_ID, P.Participant_ID
 
 /*** Add entries to the Audit Log for created Event Participants ***/
 INSERT INTO dp_Audit_Log (Table_Name,Record_ID,Audit_Description,User_Name,User_ID,Date_Time)
